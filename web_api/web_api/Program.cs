@@ -3,6 +3,7 @@ using Api.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -10,6 +11,40 @@ using web_api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("V1", new OpenApiInfo
+    {
+        Version = "V1",
+        Title = "WebAPI",
+        Description = "Product WebAPI"
+    });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Description = "Bearer Authentication with JWT Token",
+        Type = SecuritySchemeType.Http
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            new List<string>()
+        }
+    });
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -24,7 +59,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = false,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
 });
@@ -37,7 +72,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 builder.Services.AddMongo();
 builder.Services.AddRepositry<Customer>("customers");
@@ -50,42 +85,23 @@ if (app.Environment.IsDevelopment())
 {
     
     app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+   
+        app.UseSwaggerUI(options => {
+            options.SwaggerEndpoint("/swagger/V1/swagger.json", "Product WebAPI");
+        });
+ }
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
-//app.MyMiddleware();
-//app.UseWhen(context => context.Request.Query.ContainsKey("IsAuthorized") && context.Request.Query["IsAuthorized"] == "true",
 
-//   app =>
-//   {
-//       app.Use(async (context, next) =>
-//       {
-//           await context.Response.WriteAsync("Conditional middleware");
-//           await next(context);
-//       });
-
-//   });
-
-IConfiguration configuration = app.Configuration;
-IWebHostEnvironment environment = app.Environment;
+//IConfiguration configuration = app.Configuration;
+//IWebHostEnvironment environment = app.Environment;
 app.MapControllers();
 
-//app.UseMiddleware<MyMiddleware>();
-////app.MyMiddleware();
-//app.UseWhen(context => context.Request.Query.ContainsKey("IsAuthorized") && context.Request.Query["IsAuthorized"]==true,
-
-//   app =>
-//   {
-//      app.Use(async (context, next) =>
-//      {
-//         await context.Response.WriteAsync("Conditional middleware");
-//         await next(context);
-//      });
-
-//   });
+app.UseCors(x => x
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
 app.Run();

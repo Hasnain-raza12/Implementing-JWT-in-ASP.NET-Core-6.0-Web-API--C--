@@ -10,7 +10,7 @@ using web_api.DTos;
 
 namespace web_api.Controllers
 {
-    
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -22,7 +22,7 @@ namespace web_api.Controllers
             _customerRepo = customerRepo;
         }
         [HttpGet]
-        [Authorize]
+        [Route("CustomerList")]
         public IEnumerable<Customer> GetAll()
         {
             return _customerRepo.GetAll();

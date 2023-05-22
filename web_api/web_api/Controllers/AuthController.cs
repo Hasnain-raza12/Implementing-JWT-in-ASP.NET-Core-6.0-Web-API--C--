@@ -22,6 +22,7 @@ namespace web_api.Controllers
         }
         [AllowAnonymous]
         [HttpPost]
+       // [HttpPost("login")]
         public IActionResult Auth([FromBody] User user)
         {
             IActionResult response = Unauthorized();
