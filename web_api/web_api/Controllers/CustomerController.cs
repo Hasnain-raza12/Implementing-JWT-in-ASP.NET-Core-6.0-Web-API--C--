@@ -3,6 +3,7 @@ using Api.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using System.ComponentModel.DataAnnotations;
 using web_api.DTos;
 
@@ -10,6 +11,7 @@ using web_api.DTos;
 
 namespace web_api.Controllers
 {
+   
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]

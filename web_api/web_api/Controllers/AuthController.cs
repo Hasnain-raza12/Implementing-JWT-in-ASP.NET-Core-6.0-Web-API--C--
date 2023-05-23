@@ -111,6 +111,24 @@ namespace web_api.Controllers
             }
         }
 
+        //[HttpPost]
+        //[Consumes("application/json")]
+        //public IActionResult Register([FromBody] Login user)
+        //{
+        //    bool exists = collection.Find(_ => _.email == user.email).Any();
+        //    if (exists)
+        //    {
+
+        //        return BadRequest("Email Alredy Exist");
+        //    }
+        //    else
+        //    {
+        //        Login s = new Login(user.email, user.password);
+        //        collection.InsertOne(s);
+        //       return Ok("Account Created" + s);
+        //    }
+        //}
+
         private bool AuthenticateUser(string username, string password)
         {
             var filter = Builders<Login>.Filter.Eq("email", username) & Builders<Login>.Filter.Eq("password", password);
