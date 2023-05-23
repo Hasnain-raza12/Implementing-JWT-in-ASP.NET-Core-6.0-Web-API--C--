@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 using Api.Common.Settings;
+using Api.Common.Models;
 
 namespace Api.Common
 {
     public static class ServiceExtension
     {
+
         public static IServiceCollection AddMongo(this IServiceCollection services)
         {
             
