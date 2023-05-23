@@ -96,8 +96,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-//IConfiguration configuration = app.Configuration;
-//IWebHostEnvironment environment = app.Environment;
+    //IConfiguration configuration = app.Configuration;
+    //IWebHostEnvironment environment = app.Environment;
 app.MapControllers();
 
 app.UseCors(x => x
