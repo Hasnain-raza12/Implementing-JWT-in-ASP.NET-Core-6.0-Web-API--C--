@@ -72,42 +72,50 @@ namespace web_api.Controllers
         [Consumes("application/json")]
         public IActionResult Auth([FromBody] Login user)
         {
-            IActionResult response = Unauthorized();
-            // Process the authentication request
-            bool isAuthenticated = AuthenticateUser(user.email, user.password);
-
-            if (isAuthenticated)
+            try
             {
-                var issuer = configuration["Jwt:Issuer"];
-                var audience = configuration["Jwt:Audience"];
-                var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]);
-                var signingCredentials = new SigningCredentials(
-                                        new SymmetricSecurityKey(key),
-                                        SecurityAlgorithms.HmacSha512Signature
-                 );
+                IActionResult response = Unauthorized();
+                // Process the authentication request
+                bool isAuthenticated = AuthenticateUser(user.email, user.password);
 
-                var subject = new ClaimsIdentity(new[]
+                if (isAuthenticated)
                 {
+                    var issuer = configuration["Jwt:Issuer"];
+                    var audience = configuration["Jwt:Audience"];
+                    var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]);
+                    var signingCredentials = new SigningCredentials(
+                                            new SymmetricSecurityKey(key),
+                                            SecurityAlgorithms.HmacSha512Signature
+                     );
+
+                    var subject = new ClaimsIdentity(new[]
+                    {
                     new Claim(JwtRegisteredClaimNames.Sub, user.email),
                     new Claim(JwtRegisteredClaimNames.Email, user.email),
                     });
-                var expires = DateTime.UtcNow.AddMinutes(10);
-                var tokenDescriptor = new SecurityTokenDescriptor
+                    var expires = DateTime.UtcNow.AddMinutes(10);
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = subject,
+                        Expires = DateTime.UtcNow.AddMinutes(1),
+                        Issuer = issuer,
+                        Audience = audience,
+                        SigningCredentials = signingCredentials
+                    };
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    var jwtToken = tokenHandler.WriteToken(token);
+                    return Ok(jwtToken);
+                }
+                else
                 {
-                    Subject = subject,
-                    Expires = DateTime.UtcNow.AddMinutes(10),
-                    Issuer = issuer,
-                    Audience = audience,
-                    SigningCredentials = signingCredentials
-                };
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var jwtToken = tokenHandler.WriteToken(token);
-                return Ok(jwtToken);
+                    return BadRequest("You Entered Wrong Credentials");
+                }
             }
-            else
+            catch (Exception)
             {
-                return BadRequest("You Entered Wrong Credentials");
+
+                throw;
             }
         }
 

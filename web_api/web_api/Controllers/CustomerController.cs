@@ -14,7 +14,7 @@ using web_api.Middleware;
 namespace web_api.Controllers
 {
    
-   // [Authorize]
+   [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -27,14 +27,14 @@ namespace web_api.Controllers
         }
     
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Route("CustomerList")]
         public IEnumerable<Customer> GetAll()
         {
             return _customerRepo.GetAll();
         }
         [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public Customer GetId(string id)
         {
             return _customerRepo.GetbyId( id);
@@ -44,36 +44,52 @@ namespace web_api.Controllers
         [Route("insert")]
         public void Create(CreatCustomer c)
         {
-            var customer = new Customer
+            try
             {
-                
-                //Id = Guid.NewGuid(),
-                Name = c.name,
-                Email = c.email,
-                ContactNumber = c.contactNumber,
-                IsActive = true,
+                var customer = new Customer
+                {
+
+                    //Id = Guid.NewGuid(),
+                    Name = c.name,
+                    Email = c.email,
+                    ContactNumber = c.contactNumber,
+                    IsActive = true,
 
 
-            };
-            _customerRepo.Create(customer);
+                };
+                _customerRepo.Create(customer);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         
         }
         [HttpPut]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Route("update")]
         public void Update(UpdateCustomer c)
         {
-            var customer = new Customer
+            try
             {
-                Id = c.id,
-                Name = c.name,
-                Email = c.email,
-                ContactNumber = c.contactNumer,
-                IsActive = true,
+                var customer = new Customer
+                {
+                    Id = c.id,
+                    Name = c.name,
+                    Email = c.email,
+                    ContactNumber = c.contactNumer,
+                    IsActive = true,
 
 
-            };
-            _customerRepo.Update(customer);
+                };
+                _customerRepo.Update(customer);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
 
         }
 
