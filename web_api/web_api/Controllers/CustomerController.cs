@@ -14,7 +14,7 @@ using web_api.Middleware;
 namespace web_api.Controllers
 {
    
-   [Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -68,7 +68,7 @@ namespace web_api.Controllers
         }
         [HttpPut]
        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Route("update")]
+        [Route("{id}")]
         public void Update(UpdateCustomer c)
         {
             try

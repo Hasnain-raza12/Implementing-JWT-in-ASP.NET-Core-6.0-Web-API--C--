@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -83,6 +84,7 @@ namespace web_api.Controllers
                     var issuer = configuration["Jwt:Issuer"];
                     var audience = configuration["Jwt:Audience"];
                     var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]);
+                   
                     var signingCredentials = new SigningCredentials(
                                             new SymmetricSecurityKey(key),
                                             SecurityAlgorithms.HmacSha512Signature
@@ -93,7 +95,8 @@ namespace web_api.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.email),
                     new Claim(JwtRegisteredClaimNames.Email, user.email),
                     });
-                    var expires = DateTime.UtcNow.AddMinutes(10);
+                    var expires = DateTime.Now.AddMinutes(1);
+                     
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = subject,
